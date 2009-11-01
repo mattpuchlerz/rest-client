@@ -6,9 +6,25 @@ describe RestClient::Resource do
 	end
 
 	context "Resource delegation" do
-		it "GET" do
-			RestClient::Request.should_receive(:execute).with(:method => :get, :url => 'http://some/resource', :headers => { 'X-Something' => '1'}, :user => 'jane', :password => 'mypass')
-			@resource.get
+    it "GET" do
+      RestClient::Request.should_receive(:execute).with(:method => :get, :url => 'http://some/resource', :payload => nil, :headers => { 'X-Something' => '1'}, :user => 'jane', :password => 'mypass')
+      @resource.get
+    end
+
+    it "GET with payload" do
+      RestClient::Request.should_receive(:execute).with(:method => :get, :url => 'http://some/resource', :payload => 'abc', :headers => { 'X-Something' => '1'}, :user => 'jane', :password => 'mypass')
+      @resource.get 'abc'
+    end
+
+    it "GET with overridden payload" do
+      @resource = RestClient::Resource.new('http://some/resource', :payload => { 'abc' => 'abc' }, :user => 'jane', :password => 'mypass', :headers => { 'X-Something' => '1'})
+      RestClient::Request.should_receive(:execute).with(:method => :get, :url => 'http://some/resource', :payload => { 'abc' => 'abc', 'def' => 'def' }, :headers => { 'X-Something' => '1'}, :user => 'jane', :password => 'mypass')
+      @resource.get 'def' => 'def'
+    end
+
+		it "GET with overridden resource headers" do
+			RestClient::Request.should_receive(:execute).with(:method => :get, :url => 'http://some/resource', :payload => nil, :headers => { 'X-Something' => '2'}, :user => 'jane', :password => 'mypass')
+			@resource.get nil, { 'X-Something' => '2' }
 		end
 
 		it "POST" do
@@ -24,11 +40,6 @@ describe RestClient::Resource do
 		it "DELETE" do
 			RestClient::Request.should_receive(:execute).with(:method => :delete, :url => 'http://some/resource', :headers => { 'X-Something' => '1'}, :user => 'jane', :password => 'mypass')
 			@resource.delete
-		end
-
-		it "overrides resource headers" do
-			RestClient::Request.should_receive(:execute).with(:method => :get, :url => 'http://some/resource', :headers => { 'X-Something' => '2'}, :user => 'jane', :password => 'mypass')
-			@resource.get 'X-Something' => '2'
 		end
 	end
 

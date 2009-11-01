@@ -156,6 +156,11 @@ describe RestClient::Request do
 		payload.should include('user[location][country]=USA')
 		payload.should include('user[location][state]=CA')
 	end
+	
+	it "appends a payload to the URL for GET requests" do
+	  @request = RestClient::Request.new(:method => :get, :url => 'http://some/resource', :payload => 'payload')
+	  @request.parse_url(@request.url).to_s.should == 'http://some/resource?payload'
+	end
 
 	it "set urlencoded content_type header on hash payloads" do
 		@request.process_payload(:a => 1)

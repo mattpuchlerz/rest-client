@@ -75,6 +75,7 @@ module RestClient
 
 		def parse_url(url)
 			url = "http://#{url}" unless url.match(/^http/)
+			url += "?#{payload}" if @method == :get
 			URI.parse(url)
 		end
 

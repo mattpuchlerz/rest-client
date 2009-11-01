@@ -45,10 +45,12 @@ module RestClient
 			end
 		end
 
-		def get(additional_headers={})
+		def get(payload=nil, additional_headers={})
+		  payload = options[:payload].merge(payload) if options[:payload].is_a?(Hash) and payload.is_a?(Hash)
 			Request.execute(options.merge(
 				:method => :get,
 				:url => url,
+        :payload => payload,
 				:headers => headers.merge(additional_headers)
 			))
 		end
